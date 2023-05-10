@@ -1,14 +1,14 @@
 import React from "react";
-import "../index.css";
 
 function Card({ card, onCardClick }) {
 
+    //Код, чтобы в обработчик handleCardClick задавалось нужное значение с данными карточки 
     function handleClick() {
         onCardClick(card);
     }
 
     return (
-        <article key={card._id} className="card">
+        <article className="card">
 
             <img className="card__image" src={card.link} alt={card.name} onClick={handleClick} />
             <button className="card__delete-bt" type="button" aria-label="Удалить карточку"></button>

@@ -1,5 +1,4 @@
 import React from "react";
-import "../index.css";
 import Header from "./Header.js";
 import Main from "./Main.js";
 import Footer from "./Footer.js";
@@ -11,16 +10,19 @@ import PopupWithForm from "./PopupWithForm.js";
 
 function App() {
 
+  //Переменные состояния(голубым), отвечающие за видимость трёх попапов:
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
 
   const [selectedCard, setSelectedCard] = React.useState(null);
 
+  //Обработчик отображения большой картинки при клике на карточку
   function handleCardClick(card) {
     setSelectedCard(card);
   }
 
+  //Обработчики открытия попапов
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(true);
   }
@@ -33,6 +35,7 @@ function App() {
     setIsEditAvatarPopupOpen(true);
   }
 
+  //Обработчик закрытия попапов
   function closeAllPopups() {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);

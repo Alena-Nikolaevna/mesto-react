@@ -1,5 +1,4 @@
 import React from "react";
-import "../index.css";
 //import avatar from "../images/Avatar.png";
 import peroAvatar from "../images/Vector-pero.svg";
 
@@ -8,14 +7,16 @@ import api from "../utils/api.js";
 
 function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) {
 
-
+  //Переменные состояния(голубым), отвечающие за полученные данные из API(имя, о себе, аватар)
   const [userName, setUserName] = React.useState("");
   const [userDescription, setUserDescription] = React.useState("");
-  const [userAvatar, setUserAvatar] = React.useState();
+  const [userAvatar, setUserAvatar] = React.useState("");
 
+  //Переменная состояния для карточек
   const [cards, setCards] = React.useState([]);
 
   React.useEffect(() => {
+    // Получаем данные с сервера
     api.getUserInfo()
       .then((res) => {
         setUserName(res.name);
@@ -23,9 +24,8 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) {
         setUserAvatar(res.avatar);
       })
       .catch((err) => { console.log(err) });
-  });
 
-  React.useEffect(() => {
+    // Получаем карточки с сервера
     api.getInitialCards()
       .then((res) => {
         setCards(res)
