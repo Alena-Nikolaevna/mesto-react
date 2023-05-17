@@ -68,9 +68,7 @@ class Api {
     return fetch(`${this._address}/users/me/avatar`, {
       method: "PATCH",
       headers: this._headers,
-      body: JSON.stringify({
-        avatar: item.link,
-      })
+      body: JSON.stringify(item)
     }).then(this._checkResponse);
   }
 
@@ -88,6 +86,15 @@ class Api {
       method: "DELETE",
       headers: this._headers,
     }).then(this._checkResponse);
+  }
+
+
+  changeLikeCardStatus(id, isLiked) {
+    return fetch(`${this._address}/cards/likes/${id}`, {
+      method: isLiked ? 'PUT' : 'DELETE',
+      headers: this._headers,
+    })
+      .then(this._checkResponse);
   }
 
 }

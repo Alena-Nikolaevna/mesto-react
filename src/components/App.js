@@ -3,19 +3,107 @@ import Header from "./Header.js";
 import Main from "./Main.js";
 import Footer from "./Footer.js";
 import ImagePopup from "./ImagePopup.js";
-import PopupWithForm from "./PopupWithForm.js";
+import EditProfilePopup from "./EditProfilePopup.js";
+import EditAvatarPopup from "./EditAvatarPopup.js";
+import AddPlacePopup from "./AddPlacePopup.js";
+import ConfirmDeletePopup from "./ConfirmDeletePopup.js";
 
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import api from "../utils/api.js";
 //import Card from "./Card";
-//import api from "../utils/api.js";
 
 function App() {
 
-  //Переменные состояния(голубым), отвечающие за видимость трёх попапов:
+  //Переменные состояния(голубым), отвечающие за видимость четырех попапов:
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
+  const [isConfirmDeletePopupOpen, setIsConfirmDeletePopupOpen] = React.useState(false);
+
 
   const [selectedCard, setSelectedCard] = React.useState(null);
+  const [removeCard, setRemoveCard] = React.useState(null);
+
+  // Стейт, отвечающий за данные текущего пользователя ===
+  //Переменная состояния - отвечающая за полученные данные из API(имя, о себе, аватар = data)
+  const [currentUser, setCurrentUser] = React.useState({});
+
+  //Переменная состояния для карточек (список карточек)
+  const [cards, setCards] = React.useState([]);
+
+
+  React.useEffect(() => {
+    // Получаем данные пользователя с сервера
+    api.getUserInfo()
+      .then((data) => {
+        setCurrentUser(data);
+      })
+      .catch((err) => { console.log(err) });
+
+    // Получаем карточки с сервера
+    api.getInitialCards()
+      .then((res) => {
+        setCards(res)
+      })
+      .catch((err) => { console.log(err) });
+  }, []);
+
+
+  function handleCardLike(card) {
+    // Снова проверяем, есть ли уже лайк на этой карточке
+    const isLiked = card.likes.some(i => i._id === currentUser._id);
+
+    // Отправляем запрос в API и получаем обновлённые данные карточки
+    api.changeLikeCardStatus(card._id, !isLiked)
+      .then((newCard) => {
+        setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+      })
+      .catch((err) => { console.log(err) });
+  }
+
+  //Обработчик удаления своей карточки
+  function handleCardDelete(card) {
+    api.deleteCard(card._id)
+      .then(() => {
+        setCards(cards => cards.filter((c) => c._id !== card._id));
+        closeAllPopups();
+      })
+      .catch((err) => { console.log(err) });
+  }
+
+  //Обработчик сохранения данных пользователя -??
+  function handleUpdateUser(data) {
+    // Сохраняем данные пользователя
+    api.patchUserInfo(data)
+      .then((res) => {
+        setCurrentUser(res)
+        closeAllPopups()
+      })
+      .catch((err) => { console.log(err) });
+  }
+
+  //Обработчик сохранения аватара
+  function handleUpdateAvatar(item) {
+    // Обновляем аватар
+    api.patchUserAvatar(item)
+      .then((res) => {
+        setCurrentUser(res)
+        closeAllPopups()
+      })
+      .catch((err) => { console.log(err) });
+  }
+
+
+  //Обработчик добавления новой карточки
+  function handleAddPlaceSubmit(data) {
+    // Добавляем/сохраняем новую карточку
+    api.createNewCard(data)
+      .then((newCard) => {
+        setCards([newCard, ...cards])
+        closeAllPopups()
+      })
+      .catch((err) => { console.log(err) });
+  }
 
   //Обработчик отображения большой картинки при клике на карточку
   function handleCardClick(card) {
@@ -35,76 +123,62 @@ function App() {
     setIsEditAvatarPopupOpen(true);
   }
 
+  function handleConfirmDeleteClick(card) {
+    setIsConfirmDeletePopupOpen(true);
+    setRemoveCard(card);
+
+  }
+
   //Обработчик закрытия попапов
   function closeAllPopups() {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
+    setIsConfirmDeletePopupOpen(false);
     setSelectedCard(null);
+    setRemoveCard(null);
   }
 
   return (
-    <div className="page">
-      <Header />
+    //«Внедряем» данные из currentUser с помощью провайдера контекста
+    <CurrentUserContext.Provider value={currentUser}>
 
-      <Main onEditProfile={handleEditProfileClick}
-        onAddPlace={handleAddPlaceClick}
-        onEditAvatar={handleEditAvatarClick}
-        onCardClick={handleCardClick} />
+      <div className="page">
 
-      <Footer />
-      <ImagePopup card={selectedCard}
-        onClose={closeAllPopups} />
+        <Header />
 
-      <PopupWithForm name="edit-profile"
-        title="Редактировать профиль"
-        buttonText="Сохранить"
-        isOpen={isEditProfilePopupOpen}
-        onClose={closeAllPopups}>
+        <Main onEditProfile={handleEditProfileClick}
+          onAddPlace={handleAddPlaceClick}
+          onEditAvatar={handleEditAvatarClick}
+          onCardClick={handleCardClick}
+          onCardLike={handleCardLike}
+          cards={cards}
+          onCardDelete={handleConfirmDeleteClick} />
 
-        <fieldset className='popup__form-input'>
-          <input id="name-input" className="popup__form-item popup__form-item_type_name" type='text' placeholder='Имя' name='name' minLength="2" maxLength="40" required autoComplete="off" />
-          <span className="name-input-error popup__form-item-error"></span>
-        </fieldset>
+        <Footer />
 
-        <fieldset className='popup__form-input'>
-          <input id="about-input" className="popup__form-item popup__form-item_type_job" type='text' placeholder='О себе' name='about' minLength="2" maxLength="200" required autoComplete="off" />
-          <span className="about-input-error popup__form-item-error"></span>
-        </fieldset>
-      </PopupWithForm>
+        <EditProfilePopup isOpen={isEditProfilePopupOpen}
+          onClose={closeAllPopups}
+          onUpdateUser={handleUpdateUser} />
 
-      <PopupWithForm name="add-profile"
-        title="Новое место"
-        buttonText="Создать"
-        isOpen={isAddPlacePopupOpen}
-        onClose={closeAllPopups}>
-        <fieldset className='popup__form-input'>
-          <input id="title-input" className="popup__form-item popup__form-item_type_name" type='text' placeholder='Название' name="name" minLength="2" maxLength="30" required autoComplete="off" />
-          <span className="title-input-error popup__form-item-error"></span>
-        </fieldset>
+        <EditAvatarPopup isOpen={isEditAvatarPopupOpen}
+          onClose={closeAllPopups}
+          onUpdateAvatar={handleUpdateAvatar} />
 
-        <fieldset className='popup__form-input'>
-          <input id="link-input" className="popup__form-item popup__form-item_type_job" type='url' placeholder='Ссылка на картинку' name="link" required />
-          <span className="link-input-error popup__form-item-error"></span>
-        </fieldset>
-      </PopupWithForm>
+        <AddPlacePopup isOpen={isAddPlacePopupOpen}
+          onClose={closeAllPopups}
+          onAddPlace={handleAddPlaceSubmit} />
 
-      <PopupWithForm name="confirm"
-        title="Вы уверены?"
-        buttonText="Да" />
+        <ImagePopup card={selectedCard}
+          onClose={closeAllPopups} />
 
-      <PopupWithForm name="avatar"
-        title="Обновить аватар"
-        buttonText="Сохранить"
-        isOpen={isEditAvatarPopupOpen}
-        onClose={closeAllPopups}>
-        <fieldset className='popup__form-input'>
-          <input id="link-avatar" className="popup__form-item popup__form-item_type_job" type='url' placeholder='Ссылка на картинку' name="link" required />
-          <span className="link-avatar-error popup__form-item-error"></span>
-        </fieldset>
-      </PopupWithForm>
+        <ConfirmDeletePopup isOpen={isConfirmDeletePopupOpen}
+          onClose={closeAllPopups}
+          onSubmitDelete={handleCardDelete}
+          card={removeCard} />
 
-    </div>
+      </div>
+    </CurrentUserContext.Provider>
   );
 }
 
