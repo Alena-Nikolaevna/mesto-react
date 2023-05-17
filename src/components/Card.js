@@ -20,7 +20,6 @@ function Card({ card, onCardClick, onCardDelete, onCardLike }) {
         `card__like-bt ${isLiked && 'card__like-bt_active'}`
     );;
 
-
     //Код, чтобы в обработчик handleCardClick задавалось нужное значение с данными карточки 
     function handleClick() {
         onCardClick(card);

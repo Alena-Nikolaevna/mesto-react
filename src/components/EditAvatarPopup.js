@@ -3,8 +3,13 @@ import PopupWithForm from "./PopupWithForm.js";
 
 function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
 
-  // записываем объект, возвращаемый хуком, в переменную
+  // Записываем объект, возвращаемый хуком, в переменную
   const avatarRef = React.useRef();
+
+  //Сбрасываем значения инпутов при открытии попапа
+  React.useEffect(() => {
+    avatarRef.current.value = "";
+  }, [isOpen]);
 
   function handleSubmit(evt) {
     evt.preventDefault();

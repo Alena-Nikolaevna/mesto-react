@@ -30,26 +30,25 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
         setLink(evt.target.value);
     }
 
-    return(
+    return (
         <PopupWithForm name="add-profile"
-        title="Новое место"
-        buttonText="Создать"
-        isOpen={isOpen}
-        onClose={onClose}
-        onSubmit={handleSubmit}>
+            title="Новое место"
+            buttonText="Создать"
+            isOpen={isOpen}
+            onClose={onClose}
+            onSubmit={handleSubmit}>
 
-        <fieldset className='popup__form-input'>
-          <input id="title-input" className="popup__form-item popup__form-item_type_name" type='text' placeholder='Название' name="name" minLength="2" maxLength="30" required autoComplete="off" onChange={handleChangeCardName} />
-          <span className="title-input-error popup__form-item-error"></span>
-        </fieldset>
-    
-        <fieldset className='popup__form-input'>
-          <input id="link-input" className="popup__form-item popup__form-item_type_job" type='url' placeholder='Ссылка на картинку' name="link" required onChange={handleChangeCardLink} />
-          <span className="link-input-error popup__form-item-error"></span>
-        </fieldset>
-      </PopupWithForm>
+            <fieldset className='popup__form-input'>
+                <input id="title-input" className="popup__form-item popup__form-item_type_name" type='text' placeholder='Название' name="name" minLength="2" maxLength="30" required autoComplete="off" onChange={handleChangeCardName} />
+                <span className="title-input-error popup__form-item-error"></span>
+            </fieldset>
+
+            <fieldset className='popup__form-input'>
+                <input id="link-input" className="popup__form-item popup__form-item_type_job" type='url' placeholder='Ссылка на картинку' name="link" required onChange={handleChangeCardLink} />
+                <span className="link-input-error popup__form-item-error"></span>
+            </fieldset>
+        </PopupWithForm>
     )
-    
 }
 
 export default AddPlacePopup;

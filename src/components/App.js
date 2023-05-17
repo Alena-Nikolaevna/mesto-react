@@ -1,4 +1,5 @@
 import React from "react";
+import { useEffect, useState } from 'react';
 import Header from "./Header.js";
 import Main from "./Main.js";
 import Footer from "./Footer.js";
@@ -15,24 +16,22 @@ import api from "../utils/api.js";
 function App() {
 
   //Переменные состояния(голубым), отвечающие за видимость четырех попапов:
-  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
-  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
-  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
-  const [isConfirmDeletePopupOpen, setIsConfirmDeletePopupOpen] = React.useState(false);
+  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
+  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
+  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+  const [isConfirmDeletePopupOpen, setIsConfirmDeletePopupOpen] = useState(false);
 
-
-  const [selectedCard, setSelectedCard] = React.useState(null);
-  const [removeCard, setRemoveCard] = React.useState(null);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [removeCard, setRemoveCard] = useState(null);
 
   // Стейт, отвечающий за данные текущего пользователя ===
   //Переменная состояния - отвечающая за полученные данные из API(имя, о себе, аватар = data)
-  const [currentUser, setCurrentUser] = React.useState({});
+  const [currentUser, setCurrentUser] = useState({});
 
   //Переменная состояния для карточек (список карточек)
-  const [cards, setCards] = React.useState([]);
+  const [cards, setCards] = useState([]);
 
-
-  React.useEffect(() => {
+  useEffect(() => {
     // Получаем данные пользователя с сервера
     api.getUserInfo()
       .then((data) => {
@@ -47,7 +46,6 @@ function App() {
       })
       .catch((err) => { console.log(err) });
   }, []);
-
 
   function handleCardLike(card) {
     // Снова проверяем, есть ли уже лайк на этой карточке
@@ -93,7 +91,6 @@ function App() {
       .catch((err) => { console.log(err) });
   }
 
-
   //Обработчик добавления новой карточки
   function handleAddPlaceSubmit(data) {
     // Добавляем/сохраняем новую карточку
@@ -126,7 +123,6 @@ function App() {
   function handleConfirmDeleteClick(card) {
     setIsConfirmDeletePopupOpen(true);
     setRemoveCard(card);
-
   }
 
   //Обработчик закрытия попапов

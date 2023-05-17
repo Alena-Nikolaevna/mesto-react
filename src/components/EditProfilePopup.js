@@ -15,7 +15,7 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
     React.useEffect(() => {
         setName(currentUser.name);
         setDescription(currentUser.about);
-    }, [currentUser]);
+    }, [currentUser, isOpen]);
 
     function handleSubmit(evt) {
         // Запрещаем браузеру переходить по адресу формы
@@ -45,12 +45,12 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
             onSubmit={handleSubmit}>
 
             <fieldset className='popup__form-input'>
-                <input id="name-input" className="popup__form-item popup__form-item_type_name" type='text' placeholder='Имя' name='name' minLength="2" maxLength="40" required autoComplete="off" value={name} onChange={handleChangeUserName} />
+                <input id="name-input" className="popup__form-item popup__form-item_type_name" type='text' placeholder='Имя' name='name' minLength="2" maxLength="40" required autoComplete="off" value={name || ''} onChange={handleChangeUserName} />
                 <span className="name-input-error popup__form-item-error"></span>
             </fieldset>
 
             <fieldset className='popup__form-input'>
-                <input id="about-input" className="popup__form-item popup__form-item_type_job" type='text' placeholder='О себе' name='about' minLength="2" maxLength="200" required autoComplete="off" value={description} onChange={handleChangeUserDescription} />
+                <input id="about-input" className="popup__form-item popup__form-item_type_job" type='text' placeholder='О себе' name='about' minLength="2" maxLength="200" required autoComplete="off" value={description || ''} onChange={handleChangeUserDescription} />
                 <span className="about-input-error popup__form-item-error"></span>
             </fieldset>
         </PopupWithForm>
